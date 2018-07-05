@@ -14,12 +14,10 @@ MAX=11
 COINGITHUB=https://github.com/Stim-Community/stim.git
 COINPATH=usr/local/bin
 COINSRCDIR=Stim
-# P2Pport and RPCport can be found in chainparams.cpp -> CMainParams()
 COINPORT=8093
 COINRPCPORT=8091
 COINDAEMON=stimd
 COINCLI=stim-cli
-# COINCORE can be found in util.cpp -> GetDefaultDataDir()
 COINCORE=root/.stimcore
 COINCONFIG=stim.conf
 key=""
@@ -154,14 +152,14 @@ configureWallet() {
 
     sleep 10
 
-    echo -e "rpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nmaxconnections=64\nlogtimestamps=1\nexternalip=${mnip}:${COINPORT}\nmasternode=1\nmasternodeprivkey=${mnkey}" > /root/$COINCORE/$COINCONFIG
+    echo -e "rpcuser=${rpcuser}\nrpcpassword=${rpcpass}\nrpcallowip=127.0.0.1\nlisten=1\nserver=1\ndaemon=1\nstaking=0\nmaxconnections=64\nlogtimestamps=1\nexternalip=${mnip}:${COINPORT}\nmasternode=1\nmasternodeprivkey=${mnkey}" > /$COINCORE/$COINCONFIG
     echo -e "${NONE}${GREEN}* Completed${NONE}";
 }
 
-configure_systemd() {
+configuresystemd() {
     echo
     echo -e "[10/${MAX}] Configuring systemd..."
-    cat `EOF > /etc/systemd/system/$COINSRCDIR.service`
+    `cat EOF > /etc/systemd/system/$COINSRCDIR.service`
     [Unit]
     Description=$COINSRCDIR service
     After=network.target
@@ -173,8 +171,8 @@ configure_systemd() {
     Type=forking
     #PIDFile=$COINCORE/$COINSRCDIR.pid
 
-    ExecStart=$COINPATH$COINDAEMON -daemon -conf=$COINCORE/$COINCONFIG -datadir=$COINCORE
-    ExecStop=-$COINPATH$COINCLI -conf=$COINCORE/$COINCONFIG -datadir=$COINCONFIG stop
+    ExecStart=$COINPATH$COINDAEMON -daemon -conf=/$COINCORE/$COINCONFIG -datadir=$COINCORE
+    ExecStop=-$COINPATH$COINCLI -conf=/$COINCORE/$COINCONFIG -datadir=$COINCORE stop
 
     Restart=always
     PrivateTmp=true
@@ -237,13 +235,14 @@ if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
     compileWallet
     installWallet
     configureWallet
+    configuresystemd
     startWallet
     echo
     echo -e "${BOLD}The VPS side of your masternode has been installed. Use the following line in your cold wallet masternode.conf and replace the tx and index${NONE}".
     echo
     echo -e "${CYAN}masternode1 ${mnip}:${COINPORT} ${mnkey} tx index${NONE}"
     echo
-    echo -e "${BOLD}Thank you for your support of  The Stim Communiy.${NONE}"
+    echo -e "${BOLD}Thank you for your support of  The Stim Community.${NONE}"
     echo
 else
     echo && echo "Installation cancelled" && echo
