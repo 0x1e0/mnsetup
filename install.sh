@@ -159,12 +159,12 @@ configureWallet() {
 configuresystemd() {
     echo
     echo -e "[10/${MAX}] Configuring systemd..."
-    `cat EOF > /etc/systemd/system/$COINSRCDIR.service`
-    [Unit]
+    `cat  > /etc/systemd/system/$COINSRCDIR.service`
+    
     Description=$COINSRCDIR service
     After=network.target
 
-    [Service]
+    
     User=root
     Group=root
 
@@ -181,7 +181,7 @@ configuresystemd() {
     StartLimitInterval=120s
     StartLimitBurst=5
 
-    [Install]
+    
     WantedBy=multi-user.target
     EOF
 
